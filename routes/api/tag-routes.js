@@ -52,8 +52,25 @@ router.post('/', async (req, res) => {
   }
 });
 
-router.put('/:id', (req, res) => {
-  // update a tag's name by its `id` value
+router.put('/:id', async (req, res) => {
+  try {
+    const { id } = req.params;
+
+    if (await Tag.findByPk(id)) {
+      const { tag_name } = req.body;
+
+      const result = await Tag.update(
+        { tag_name },
+        { where: { id } }
+      );
+
+      res.status(200).json("Tag has been updated");
+    } else {
+      res.status(404).json('Tag does not exist and could not be udpated');
+    }
+  } catch (err) {
+    res.status(500).json(err);
+  }
 });
 
 router.delete('/:id', (req, res) => {
