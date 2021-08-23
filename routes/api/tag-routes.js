@@ -1,5 +1,5 @@
 const router = require('express').Router();
-const { Category, Tag, Product, ProductTag } = require('../../models');
+const { Tag, Product, ProductTag } = require('../../models');
 
 // The `/api/tags` endpoint
 
@@ -13,12 +13,7 @@ const opts = {
         'price',
         'stock'
       ],
-      through: { attributes: [] },
-      include: [
-        {
-          model: Category
-        }
-      ]
+      through: { attributes: [] }
     }
   ]
 }
@@ -32,9 +27,18 @@ router.get('/', async (req, res) => {
   }
 });
 
-router.get('/:id', (req, res) => {
-  // find a single tag by its `id`
-  // be sure to include its associated Product data
+router.get('/:id', async (req, res) => {
+  try {
+    const { id } = req.params;
+    const tag = await Tag.findByPk(
+      id,
+      opts
+    );
+    if (!tag) res.status(404).json('Tag could not be found');
+    else res.status(200).json(tag);
+  } catch (err) {
+    res.status(500).json(err);
+  }
 });
 
 router.post('/', (req, res) => {
