@@ -56,7 +56,7 @@ router.put('/:id', async (req, res) => {
   try {
     const { id } = req.params;
 
-    if ((await Category.findByPk(id))) {
+    if (await Category.findByPk(id)) {
       const { category_name } = req.body;
 
       const result = await Category.update(
