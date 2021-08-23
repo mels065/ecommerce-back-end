@@ -23,8 +23,6 @@ const opts = {
 
 // get all products
 router.get('/', async (req, res) => {
-  // find all products
-  // be sure to include its associated Category and Tag data
   try {
     const products = await Product.findAll(opts);
     res.status(200).json(products);
@@ -34,9 +32,18 @@ router.get('/', async (req, res) => {
 });
 
 // get one product
-router.get('/:id', (req, res) => {
-  // find a single product by its `id`
-  // be sure to include its associated Category and Tag data
+router.get('/:id', async (req, res) => {
+  try {
+    const { id } = req.params;
+    const product = await Product.findByPk(
+      id,
+      opts
+    );
+    if (!product) res.status(404).json('Product could not be found');
+    else res.status(200).json(product);
+  } catch (err) {
+    res.status(500).json(err);
+  }
 });
 
 // create new product
