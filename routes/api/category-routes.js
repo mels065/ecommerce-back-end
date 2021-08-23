@@ -28,8 +28,9 @@ router.get('/', async (req, res) => {
 
 router.get('/:id', async (req, res) => {
   try {
+    const { id } = req.params;
     const category = await Category.findByPk(
-      req.params.id,
+      id,
       opts
     );
     
@@ -51,8 +52,25 @@ router.post('/', async (req, res) => {
   }
 });
 
-router.put('/:id', (req, res) => {
-  // update a category by its `id` value
+router.put('/:id', async (req, res) => {
+  try {
+    const { id } = req.params;
+
+    if ((await Category.findByPk(id))) {
+      const { category_name } = req.body;
+
+      const result = await Category.update(
+        { category_name },
+        { where: { id } }
+      );
+      
+      res.status(200).json({ id, category_name });
+    } else {
+      res.status(404).json('Category does not exist and could not be udpated');
+    }
+  } catch (err) {
+    res.status(500).json(err);
+  }
 });
 
 router.delete('/:id', (req, res) => {
